@@ -36,6 +36,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^0.13.5
   shared_preferences: ^2.0.15
+  webview_flutter: ^4.13.0
+  webview_flutter_android: ^4.10.1
+  webview_flutter_wkwebview: ^3.23.0
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

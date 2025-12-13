@@ -4,7 +4,21 @@ import 'screens/auth_screen.dart';
 import 'screens/verify_screen.dart';
 import 'screens/checkout_screen.dart';
 
-void main() {
+import 'package:flutter/foundation.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (!kIsWeb) {
+    if (WebViewPlatform.instance == null) {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        WebViewPlatform.instance = AndroidWebViewPlatform();
+      }
+    }
+  }
+
   runApp(const PerfumeApp());
 }
 

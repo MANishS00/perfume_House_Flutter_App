@@ -1,6 +1,12 @@
+import 'dart:ui' as html;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import '../services/api_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -26,6 +32,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Map<String, dynamic>? directProduct;
   Map<String, dynamic>? _createdOrder;
   String? _razorpayOrderId;
+  String? _paymentUrl;
   List<Map<String, dynamic>> _orderItems = [];
   double _orderAmount = 0.0;
   bool _processingPayment = false;
@@ -189,6 +196,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           setState(() {
             _createdOrder = createRes['order'] as Map<String, dynamic>?;
             _razorpayOrderId = createRes['razorpay_order_id'] as String?;
+            _paymentUrl = createRes['payment_url'] as String?;
           });
         } else {
           _show('Failed to create order: ${createRes['error']}');
@@ -235,6 +243,65 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       _show('Payment error: $e');
     } finally {
       setState(() => _processingPayment = false);
+    }
+  }
+
+  Future<void> _openPaymentWebView(String url) async {
+    if (url.isEmpty) return _show('No payment URL available');
+
+    if (kIsWeb) {
+      // For web, use url_launcher
+      if (await canLaunchUrl(Uri.parse(url))) {
+        await launchUrl(
+          Uri.parse(url),
+          mode: LaunchMode.inAppWebView, // Opens in a webview
+          webOnlyWindowName: '_self', // Opens in current tab
+        );
+      } else {
+        _show('Could not launch $url');
+      }
+      return;
+    }
+
+    // Mobile platforms continue with WebView
+    setState(() => _processingPayment = true);
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) {
+          final controller = WebViewController()
+            ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            ..setNavigationDelegate(
+              NavigationDelegate(
+                onNavigationRequest: (request) {
+                  final u = request.url;
+                  if (u.contains('/payment-success')) {
+                    Navigator.of(context).pop('success');
+                    return NavigationDecision.prevent;
+                  }
+                  if (u.contains('/payment-fail')) {
+                    Navigator.of(context).pop('fail');
+                    return NavigationDecision.prevent;
+                  }
+                  return NavigationDecision.navigate;
+                },
+              ),
+            )
+            ..loadRequest(Uri.parse(url));
+
+          return Scaffold(
+            appBar: AppBar(title: const Text('Complete payment')),
+            body: WebViewWidget(controller: controller),
+          );
+        },
+      ),
+    );
+
+    setState(() => _processingPayment = false);
+    if (result == 'success') {
+      _show('Payment success — order completed');
+      // Optionally refresh order state
+    } else if (result == 'fail') {
+      _show('Payment failed or cancelled');
     }
   }
 
@@ -302,12 +369,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           Row(
                             children: [
                               Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () => _simulatePaymentResult(true),
-                                  child: const Text(
-                                    'Simulate Success (Razorpay)',
-                                  ),
-                                ),
+                                child: _paymentUrl != null
+                                    ? ElevatedButton(
+                                        onPressed: () =>
+                                            _openPaymentWebView(_paymentUrl!),
+                                        child: const Text('Pay Now'),
+                                      )
+                                    : ElevatedButton(
+                                        onPressed: () =>
+                                            _simulatePaymentResult(true),
+                                        child: const Text(
+                                          'Simulate Success (Razorpay)',
+                                        ),
+                                      ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
