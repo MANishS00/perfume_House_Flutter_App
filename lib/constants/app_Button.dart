@@ -23,6 +23,8 @@ class AppButton extends StatelessWidget {
   final Color? iconColor;
   final double iconGap;
 
+  final bool isLoading;
+
   const AppButton({
     super.key,
     required this.text,
@@ -35,12 +37,11 @@ class AppButton extends StatelessWidget {
     this.textSize = 18,
     this.textWeight = FontWeight.w600,
     this.elevation = 0,
-
-    // icon (optional)
     this.icon,
     this.iconSize = 20,
     this.iconColor,
     this.iconGap = 8,
+    this.isLoading = false,
   });
 
   @override
@@ -51,7 +52,7 @@ class AppButton extends StatelessWidget {
       width: width,
       height: height,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           elevation: elevation,
@@ -59,26 +60,39 @@ class AppButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(radius),
           ),
         ),
-        child: hasIcon
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: iconSize, color: iconColor ?? textColor),
-                  iconGap.gapW,
-                  AppText(
-                    text: text,
-                    size: textSize,
-                    weight: textWeight,
-                    color: textColor,
-                  ),
-                ],
+        child: isLoading
+            ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(textColor),
+                ),
               )
-            : AppText(
-                text: text,
-                size: textSize,
-                weight: textWeight,
-                color: textColor,
-              ),
+            : (hasIcon
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          icon,
+                          size: iconSize,
+                          color: iconColor ?? textColor,
+                        ),
+                        iconGap.gapW,
+                        AppText(
+                          text: text,
+                          size: textSize,
+                          weight: textWeight,
+                          color: textColor,
+                        ),
+                      ],
+                    )
+                  : AppText(
+                      text: text,
+                      size: textSize,
+                      weight: textWeight,
+                      color: textColor,
+                    )),
       ),
     );
   }

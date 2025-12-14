@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
+import 'package:perfumeapp/constants/app_Button.dart';
+import 'package:perfumeapp/constants/app_Text.dart';
+import 'package:perfumeapp/constants/app_TextField.dart';
+import 'package:perfumeapp/constants/app_ToastMessage.dart';
+import 'package:perfumeapp/constants/app_colors.dart';
+import 'package:perfumeapp/constants/card_Container.dart';
+import 'package:perfumeapp/constants/gap_Extension.dart';
+import 'package:perfumeapp/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -48,48 +55,61 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _show(String s) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
+    showAppToast(context, message: s, type: ToastType.warning);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Auth')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _emailCtrl,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: _loading ? null : _requestCode,
-                  child: _loading
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(
-                          _isSignup
-                              ? 'Request Signup Code'
-                              : 'Request Login Code',
-                        ),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('Auth'),
+        backgroundColor: AppColors.background,
+      ),
+
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: AppCardContainer(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      text: 'Join Us',
+                      size: 32,
+                      weight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+
+                    8.gap,
+
+                    AppText(
+                      text: 'with Email',
+                      size: 18,
+                      color: AppColors.textPrimary,
+                    ),
+
+                    24.gap,
+                    AppTextField(
+                      hintText: 'Enter your email',
+                      controller: _emailCtrl,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+
+                    40.gap,
+
+                    AppButton(
+                      text: "Send OTP",
+                      isLoading: _loading,
+                      onPressed: _loading ? null : _requestCode,
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                TextButton(
-                  onPressed: () => setState(() => _isSignup = !_isSignup),
-                  child: Text(
-                    _isSignup ? 'Switch to Login' : 'Switch to Signup',
-                  ),
-                ),
-              ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
