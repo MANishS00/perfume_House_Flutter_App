@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'screens/product_list.dart';
 import 'screens/auth_screen.dart';
 import 'screens/verify_screen.dart';
@@ -28,8 +29,10 @@ class PerfumeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Perfume Store',
-      theme: ThemeData(primarySwatch: Colors.purple),
+      title: 'Perfume House',
+      theme: ThemeData(
+        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+      ),
       home: const ProductListScreen(),
       routes: {
         '/auth': (c) => const AuthScreen(),
