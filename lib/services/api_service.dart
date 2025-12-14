@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:perfumeapp/base_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// IMPORTANT: If you run the Flutter app on Android emulator use 10.0.2.2 for localhost
-// final baseUrl = 'http://10.0.2.2:5000/api';
-final baseUrl = 'http://:5000';
 
 class ApiService {
   static Future<List<dynamic>> fetchProducts() async {
