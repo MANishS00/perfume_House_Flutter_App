@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:perfumeapp/screens/homePage.dart';
+import 'package:perfumeapp/screens/order_history.dart';
 import 'screens/product_list.dart';
 import 'screens/auth_screen.dart';
 import 'screens/verify_screen.dart';
@@ -33,11 +35,12 @@ class PerfumeApp extends StatelessWidget {
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
       ),
-      home: const ProductListScreen(),
+      home: const MainScreen(),
       routes: {
         '/auth': (c) => const AuthScreen(),
         '/verify': (c) => const VerifyScreen(),
         '/checkout': (c) => const CheckoutScreen(),
+        '/historyScreen': (c) => const OrderHistoryScreen(),
       },
     );
   }

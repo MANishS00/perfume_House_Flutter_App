@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:perfumeapp/screens/auth_screen.dart';
+import 'package:perfumeapp/constants/appBar.dart';
+import 'package:perfumeapp/constants/app_Button.dart';
+import 'package:perfumeapp/constants/app_Text.dart';
+import 'package:perfumeapp/constants/app_colors.dart';
+import 'package:perfumeapp/constants/card_Container.dart';
+import 'package:perfumeapp/screens/widgets/cart_item_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/cart.dart';
 import '../services/api_service.dart';
@@ -73,70 +78,43 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Cart'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.abc_outlined),
-            onPressed: () async {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => AuthScreen()),
-              );
-            },
-          ),
-        ],
+        title: Text('Your Cart'),
+        backgroundColor: AppColors.background,
       ),
+      backgroundColor: AppColors.background,
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : (cart == null || cart!.items.isEmpty)
-          ? const Center(child: Text('Cart is empty'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: cart!.items.length,
-              itemBuilder: (context, i) {
-                final item = cart!.items[i];
-                return Card(
-                  child: ListTile(
-                    leading: item.image.isNotEmpty
-                        ? Image.network(
-                            item.image,
-                            width: 56,
-                            height: 56,
-                            fit: BoxFit.cover,
-                          )
-                        : const SizedBox(
-                            width: 56,
-                            height: 56,
-                            child: Icon(Icons.image_not_supported),
-                          ),
-                    title: Text(item.name),
-                    subtitle: Text('\$${item.price.toStringAsFixed(2)}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.remove_circle_outline),
-                          onPressed: () =>
-                              changeQuantity(item.id, item.quantity - 1),
-                        ),
-                        Text('${item.quantity}'),
-                        IconButton(
-                          icon: const Icon(Icons.add_circle_outline),
-                          onPressed: () =>
-                              changeQuantity(item.id, item.quantity + 1),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+          ? const Center(child: AppText(text: 'Cart is empty'))
+          : SafeArea(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: cart!.items.length,
+                itemBuilder: (context, i) {
+                  final item = cart!.items[i];
+                  return CartItemTile(
+                    imagePath: item.image,
+                    title: item.name,
+                    size: '',
+                    price: 'Rs ${item.price.toStringAsFixed(2)}',
+                    quantity: item.quantity,
+                    onIncrement: () {
+                      changeQuantity(item.id, item.quantity - 1);
+                    },
+                    onDecrement: () {
+                      changeQuantity(item.id, item.quantity + 1);
+                    },
+                  );
+                },
+              ),
             ),
       // If cart has items show a checkout button at the bottom
       bottomNavigationBar: (!loading && cart != null && cart!.items.isNotEmpty)
           ? SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: ElevatedButton(
+                child: AppButton(
+                  text: "Add Address",
                   onPressed: () async {
                     // ensure cartId is stored in prefs so checkout merges it
                     final prefs = await SharedPreferences.getInstance();
@@ -147,13 +125,6 @@ class _CartScreenState extends State<CartScreen> {
                     await loadCart();
                     setState(() {});
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 14.0),
-                    child: Text(
-                      'Proceed to Checkout',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
                 ),
               ),
             )
