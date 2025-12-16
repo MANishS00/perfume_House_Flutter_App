@@ -135,17 +135,19 @@ class _AccountPageState extends State<AccountPage> {
                   );
                 },
               ),
+
               _MenuTile(
-                title: 'Site Info',
+                title: 'Data Privacy',
                 onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (_) => const SiteInfoScreen()),
-                  // );
+                  Navigator.pushNamed(context, '/dataprivacyScreen');
                 },
               ),
-              _MenuTile(title: 'Data Privacy', onTap: () {}),
-              _MenuTile(title: 'Contact Us', onTap: () {}),
+              _MenuTile(
+                title: 'Contact Us',
+                onTap: () {
+                  Navigator.pushNamed(context, '/contactusScreen');
+                },
+              ),
 
               /// Show Login/Signup if not logged in
               if (!_loggedIn) ...[
