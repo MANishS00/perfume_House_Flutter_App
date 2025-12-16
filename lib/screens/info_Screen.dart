@@ -18,7 +18,7 @@ class InfoDetailScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: AppText(text: body.isNotEmpty ? body : 'Not set', size: 14),
+        child: AppText(text: body.isNotEmpty ? body : 'Loading...', size: 14),
       ),
     );
   }
