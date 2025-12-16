@@ -1,10 +1,10 @@
 // product_list.dart - Fixed version
 import 'package:flutter/material.dart';
 import 'package:perfumeapp/screens/Cart/cart_screen.dart';
-import 'package:perfumeapp/screens/edit_profile.dart';
-import 'package:perfumeapp/screens/order_history.dart';
+import 'package:perfumeapp/screens/product_details/product_details_screen.dart';
 import 'package:perfumeapp/screens/product_list_Screen/product_list_viewmodel.dart';
-import 'package:perfumeapp/screens/site_info.dart';
+import 'package:perfumeapp/screens/product_list_Screen/widgets/grid_product_card.dart';
+import 'package:perfumeapp/screens/product_list_Screen/widgets/horizontal_product_card.dart';
 import 'package:provider/provider.dart';
 
 class ProductListScreen extends StatefulWidget {
@@ -91,7 +91,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
               ),
             ),
-            drawer: _buildDrawer(context, viewModel),
             body: viewModel.loading
                 ? const Center(child: CircularProgressIndicator())
                 : RefreshIndicator(
@@ -104,227 +103,78 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  Widget _buildDrawer(BuildContext context, ProductListViewModel viewModel) {
-    return Drawer(
-      child: FutureBuilder<Map<String, dynamic>>(
-        future: viewModel.getAuthInfo(),
-        builder: (context, snap) {
-          final loggedIn = snap.hasData && (snap.data!['loggedIn'] == true);
-          final email = snap.hasData
-              ? (snap.data!['email'] ?? '') as String
-              : '';
-          final firstName = snap.hasData
-              ? (snap.data!['firstName'] ?? '') as String
-              : '';
-          final lastName = snap.hasData
-              ? (snap.data!['lastName'] ?? '') as String
-              : '';
-          final phone = snap.hasData
-              ? (snap.data!['phone'] ?? '') as String
-              : '';
+  Widget _buildProductList(ProductListViewModel viewModel) {
+    final horizontalProducts = viewModel.filteredProducts.take(10).toList();
 
-          return ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text(
-                      'Menu',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// 🔹 Header
+            const Text(
+              "Perfume\nHouse",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 20),
+
+            /// 🔹 Horizontal Scroll
+            SizedBox(
+              height: 240,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: horizontalProducts.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    child: HorizontalProductCard(
+                      product: horizontalProducts[index],
                     ),
-                    if (loggedIn &&
-                        (firstName.isNotEmpty || email.isNotEmpty)) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        '$firstName${lastName.isNotEmpty ? ' $lastName' : ''}',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                    if (loggedIn && phone.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        phone,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                    if (loggedIn && email.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        email,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.shopping_cart),
-                title: const Text('View Cart'),
-                onTap: () async {
-                  final cartId = await ProductListViewModel.getCartId();
-                  if (cartId == null) {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Cart is empty')),
-                      );
-                    }
-                    return;
-                  }
-                  Navigator.pop(context);
-                  if (mounted) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CartScreen(cartId: cartId),
-                      ),
-                    );
-                  }
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.info_outline),
-                title: const Text('Site Info'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SiteInfoScreen()),
                   );
                 },
               ),
-              if (loggedIn)
-                ListTile(
-                  leading: const Icon(Icons.history),
-                  title: const Text('My Orders'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const OrderHistoryScreen(),
-                      ),
-                    );
-                  },
-                ),
-              if (loggedIn)
-                ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text('Edit Profile'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const EditProfileScreen(),
-                      ),
-                    );
-                  },
-                ),
-              if (loggedIn)
-                ListTile(
-                  leading: const Icon(Icons.logout),
-                  title: const Text('Logout'),
-                  onTap: () async {
-                    await viewModel.logout();
-                    Navigator.pop(context);
-                  },
-                )
-              else
-                ListTile(
-                  leading: const Icon(Icons.login),
-                  title: const Text('Login / Signup'),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await Navigator.pushNamed(context, '/auth');
-                    viewModel.notifyListeners();
-                  },
-                ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildProductList(ProductListViewModel viewModel) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: viewModel.filteredProducts.length + 1,
-      itemBuilder: (context, i) {
-        if (i == 0) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: TextField(
-              controller: viewModel.searchController,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Search products by name, brand or category',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (v) {
-                viewModel.setSearchQuery(v);
-              },
             ),
-          );
-        }
-        final p = viewModel.filteredProducts[i - 1];
-        return Card(
-          child: ListTile(
-            leading: p.imageUrl.isNotEmpty
-                ? Image.network(
-                    p.imageUrl,
-                    width: 56,
-                    height: 56,
-                    fit: BoxFit.cover,
-                  )
-                : const SizedBox(
-                    width: 56,
-                    height: 56,
-                    child: Icon(Icons.image_not_supported),
-                  ),
-            title: Text(p.name),
-            subtitle: Text('\$${p.price.toStringAsFixed(2)} • ${p.brand}'),
-            trailing: Wrap(
-              spacing: 8,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _handleAddToCart(p.id),
-                  child: const Text('Add'),
+
+            const SizedBox(height: 24),
+
+            /// 🔹 Popular Products Title
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  "Popular Products",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
-                OutlinedButton(
-                  onPressed: () async {
-                    await Navigator.pushNamed(
-                      context,
-                      '/checkout',
-                      arguments: {
-                        'directProduct': {'productId': p.id, 'qty': 1},
-                      },
-                    );
-                    viewModel.notifyListeners();
-                  },
-                  child: const Text('Buy'),
-                ),
+                Text("see all", style: TextStyle(color: Colors.orange)),
               ],
             ),
-            onTap: () {},
-          ),
-        );
-      },
+
+            const SizedBox(height: 16),
+
+            /// 🔹 Grid Products (2 per row)
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: viewModel.filteredProducts.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.65,
+              ),
+              itemBuilder: (context, index) {
+                final product = viewModel.filteredProducts[index];
+                return GridProductCard(
+                  product: product,
+                  onAdd: () => _handleAddToCart(product.id),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
