@@ -12,6 +12,7 @@ class ProductDetailsScreen extends StatefulWidget {
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int quantity = 1;
+  int currentImageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -40,27 +41,72 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          Image.network(widget.product.imageUrl, height: 260),
+                          Image.network(
+                            widget.product.images[currentImageIndex],
+                            height: 260,
+                            fit: BoxFit.contain,
+                          ),
 
-                          Positioned(
-                            left: 0,
-                            child: _arrowButton(
-                              Icons.chevron_left,
-                              Colors.black,
+                          /// LEFT ARROW
+                          if (widget.product.images.length > 1)
+                            Positioned(
+                              left: 0,
+                              child: _arrowButton(
+                                Icons.chevron_left,
+                                Colors.black87,
+                                () {
+                                  setState(() {
+                                    currentImageIndex =
+                                        (currentImageIndex -
+                                            1 +
+                                            widget.product.images.length) %
+                                        widget.product.images.length;
+                                  });
+                                },
+                              ),
                             ),
-                          ),
-                          Positioned(
-                            right: 0,
-                            child: _arrowButton(
-                              Icons.chevron_right,
-                              Colors.orange,
+
+                          /// RIGHT ARROW
+                          if (widget.product.images.length > 1)
+                            Positioned(
+                              right: 0,
+                              child: _arrowButton(
+                                Icons.chevron_right,
+                                Colors.orange,
+                                () {
+                                  setState(() {
+                                    currentImageIndex =
+                                        (currentImageIndex + 1) %
+                                        widget.product.images.length;
+                                  });
+                                },
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
 
                     const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        widget.product.images.length,
+                        (index) => Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 12,
+                          ),
+                          width: currentImageIndex == index ? 10 : 8,
+                          height: currentImageIndex == index ? 10 : 8,
+                          decoration: BoxDecoration(
+                            color: currentImageIndex == index
+                                ? Colors.orange
+                                : Colors.grey.shade400,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ),
 
                     /// Brand
                     const Text(
@@ -216,7 +262,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _arrowButton(IconData icon, Color color) {
+  Widget _arrowButton(IconData icon, Color color, VoidCallback onTap) {
     return Container(
       decoration: BoxDecoration(
         color: color,
@@ -224,7 +270,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       ),
       child: IconButton(
         icon: Icon(icon, color: Colors.white),
-        onPressed: () {},
+        onPressed: onTap,
       ),
     );
   }
