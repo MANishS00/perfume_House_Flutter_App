@@ -71,13 +71,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                         const SizedBox(height: 8),
                         ...items.map(
                           (it) => Text(
-                            '${it['name']} x${it['quantity']} - \$${(it['price'] ?? 0).toString()}',
+                            '${it['name']} x${it['quantity']} - Rs ${(it['price'] ?? 0).toString()}',
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text('Status: ${o['order_status'] ?? ''}'),
                         Text(
-                          'Amount: \$${o['payment']?['amount'] ?? ''} ${o['payment']?['currency'] ?? ''}',
+                          'Amount: Rs ${o['payment']?['amount'] ?? ''} ${o['payment']?['currency'] ?? ''}',
                         ),
                       ],
                     ),

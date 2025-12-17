@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
+import 'package:perfumeapp/constants/app_Button.dart';
+import 'package:perfumeapp/constants/app_Text.dart';
+import 'package:perfumeapp/constants/app_ToastMessage.dart';
+import 'package:perfumeapp/constants/app_colors.dart';
+import 'package:perfumeapp/constants/card_Container.dart';
+import 'package:perfumeapp/constants/gap_Extension.dart';
+import 'package:perfumeapp/screens/widgets/otp_field.dart';
+import 'package:perfumeapp/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class VerifyScreen extends StatefulWidget {
@@ -49,7 +56,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
   }
 
   void _show(String s) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
+      showAppToast(context, message: s, type: ToastType.warning);
 
   @override
   Widget build(BuildContext context) {
@@ -57,30 +64,44 @@ class _VerifyScreenState extends State<VerifyScreen> {
     final email = args['email'] ?? '';
     final action = args['action'] ?? 'signup';
     return Scaffold(
-      appBar: AppBar(title: const Text('Verify Code')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text('A 5-digit code was sent to $email for $action.'),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _codeCtrl,
-              decoration: const InputDecoration(labelText: 'Enter code'),
-              keyboardType: TextInputType.number,
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: AppCardContainer(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppText(text: 'Enter OTP', size: 32, weight: FontWeight.w700),
+                  8.gap,
+
+                  AppText(text: 'Send on $email', size: 18),
+                  32.gap,
+
+                  OtpField(
+                    length: 5,
+                    onCompleted: (otp) {
+                      debugPrint('OTP Entered: $otp');
+                    },
+                  ),
+                  40.gap,
+
+                  AppButton(
+                    text: "Verify",
+                    isLoading: _loading,
+                    onPressed: _loading ? null : () => _verify(args),
+                  ),
+                  24.gap,
+
+                  TextButton(
+                    onPressed: () {},
+                    child: AppText(text: 'Resend OTP', size: 16),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: _loading ? null : () => _verify(args),
-              child: _loading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Verify'),
-            ),
-          ],
+          ),
         ),
       ),
     );
