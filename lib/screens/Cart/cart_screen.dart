@@ -124,9 +124,9 @@ class _CartScreenState extends State<CartScreen> {
             price: 'Rs ${item.price.toStringAsFixed(2)}',
             quantity: item.quantity,
             onIncrement: () =>
-                _handleChangeQuantity(item.id, item.quantity + 1),
-            onDecrement: () =>
                 _handleChangeQuantity(item.id, item.quantity - 1),
+            onDecrement: () =>
+                _handleChangeQuantity(item.id, item.quantity + 1),
             // onRemove: () => _handleRemoveItem(item.id),
           );
         },

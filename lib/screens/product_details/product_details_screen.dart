@@ -135,7 +135,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               style: TextStyle(color: Colors.orange),
                             ),
                             Text(
-                              "\$${widget.product.price}",
+                              "${widget.product.price.toStringAsFixed(0)} ₹",
                               style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,

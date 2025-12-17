@@ -1,10 +1,13 @@
 // product_list.dart - Fixed version
 import 'package:flutter/material.dart';
-import 'package:perfumeapp/screens/Cart/cart_screen.dart';
-import 'package:perfumeapp/screens/product_details/product_details_screen.dart';
+import 'package:perfumeapp/constants/app_Button.dart';
+import 'package:perfumeapp/constants/app_Text.dart';
+import 'package:perfumeapp/constants/app_colors.dart';
+import 'package:perfumeapp/constants/gap_Extension.dart';
 import 'package:perfumeapp/screens/product_list_Screen/product_list_viewmodel.dart';
 import 'package:perfumeapp/screens/product_list_Screen/widgets/grid_product_card.dart';
 import 'package:perfumeapp/screens/product_list_Screen/widgets/horizontal_product_card.dart';
+import 'package:perfumeapp/screens/product_list_Screen/widgets/list_Product_Card.dart';
 import 'package:provider/provider.dart';
 
 class ProductListScreen extends StatefulWidget {
@@ -58,39 +61,40 @@ class _ProductListScreenState extends State<ProductListScreen> {
       child: Consumer<ProductListViewModel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Perfume Store'),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.shopping_cart),
-                  onPressed: () async {
-                    final cartId = await ProductListViewModel.getCartId();
-                    if (cartId == null) {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Cart is empty')),
-                        );
-                      }
-                      return;
-                    }
-                    if (mounted) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CartScreen(cartId: cartId),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ],
-              leading: Builder(
-                builder: (context) => IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                ),
-              ),
-            ),
+            // appBar: AppBar(
+            //   title: const Text('Perfume Store'),
+            //   actions: [
+            //     IconButton(
+            //       icon: const Icon(Icons.shopping_cart),
+            //       onPressed: () async {
+            //         final cartId = await ProductListViewModel.getCartId();
+            //         if (cartId == null) {
+            //           if (mounted) {
+            //             ScaffoldMessenger.of(context).showSnackBar(
+            //               const SnackBar(content: Text('Cart is empty')),
+            //             );
+            //           }
+            //           return;
+            //         }
+            //         if (mounted) {
+            //           Navigator.push(
+            //             context,
+            //             MaterialPageRoute(
+            //               builder: (_) => CartScreen(cartId: cartId),
+            //             ),
+            //           );
+            //         }
+            //       },
+            //     ),
+            //   ],
+            //   leading: Builder(
+            //     builder: (context) => IconButton(
+            //       icon: const Icon(Icons.menu),
+            //       onPressed: () => Scaffold.of(context).openDrawer(),
+            //     ),
+            //   ),
+            // ),
+            backgroundColor: AppColors.background,
             body: viewModel.loading
                 ? const Center(child: CircularProgressIndicator())
                 : RefreshIndicator(
@@ -114,10 +118,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// 🔹 Header
-            const Text(
-              "Perfume\nHouse",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-            ),
+            AppText(text: "Perfume\nHouse", size: 28, weight: FontWeight.w600),
 
             const SizedBox(height: 20),
 
@@ -142,35 +143,61 @@ class _ProductListScreenState extends State<ProductListScreen> {
             /// 🔹 Popular Products Title
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   "Popular Products",
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
-                Text("see all", style: TextStyle(color: Colors.orange)),
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, '/allProductView'),
+                  child: Container(
+                    height: 25,
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(
+                        "See All",
+                        style: TextStyle(fontSize: 12, color: AppColors.white),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
 
             const SizedBox(height: 16),
 
             /// 🔹 Grid Products (2 per row)
-            GridView.builder(
+            ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: viewModel.filteredProducts.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.65,
-              ),
+              itemCount: viewModel.filteredProducts.length > 10
+                  ? 10
+                  : viewModel.filteredProducts.length,
               itemBuilder: (context, index) {
                 final product = viewModel.filteredProducts[index];
-                return GridProductCard(
-                  product: product,
-                  onAdd: () => _handleAddToCart(product.id),
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: ListProductCard(
+                    product: product,
+                    onAdd: () => _handleAddToCart(product.id),
+                  ),
                 );
               },
+            ),
+            Center(
+              child: SizedBox(
+                width: 200,
+                child: AppButton(
+                  text: "See All",
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/allProductView');
+                  },
+                ),
+              ),
             ),
           ],
         ),

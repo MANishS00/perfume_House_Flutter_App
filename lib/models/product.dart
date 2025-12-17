@@ -2,6 +2,7 @@ class Product {
   final String id;
   final String name;
   final String brand;
+  final String size;
   final String category;
   final String description;
   final double price;
@@ -12,6 +13,7 @@ class Product {
     required this.id,
     required this.name,
     required this.brand,
+    required this.size,
     required this.category,
     required this.description,
     required this.price,
@@ -32,6 +34,7 @@ class Product {
       id: json['_id'] as String,
       name: json['name'] ?? '',
       brand: json['brand'] ?? '',
+      size: json['size'] ?? '',
       category: json['category'] ?? '',
       description: json['description'] ?? '',
       price: value,

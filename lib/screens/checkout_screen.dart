@@ -342,7 +342,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '\$${(it['price'] as num? ?? 0).toStringAsFixed(2)}',
+                                  'Rs ${(it['price'] as num? ?? 0).toStringAsFixed(2)}',
                                 ),
                               ],
                             ),
@@ -357,7 +357,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '\$${_orderAmount.toStringAsFixed(2)}',
+                              'Rs ${_orderAmount.toStringAsFixed(2)}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),

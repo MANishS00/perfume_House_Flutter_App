@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:perfumeapp/constants/app_Text.dart';
+import 'package:perfumeapp/constants/app_colors.dart';
+import 'package:perfumeapp/constants/gap_Extension.dart';
 import 'package:perfumeapp/models/product.dart';
 import 'package:perfumeapp/screens/product_details/product_details_screen.dart';
 
@@ -23,7 +26,7 @@ class HorizontalProductCard extends StatelessWidget {
         width: 180,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -33,38 +36,83 @@ class HorizontalProductCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Stack(
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
-              child: Image.network(
-                product.imageUrl,
-                height: 140,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+            10.gap,
+            Column(
+              children: [
+                Expanded(child: Container()),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: product.category == 'Women'
+                                  ? Colors.pink
+                                  : product.category == 'Men'
+                                  ? Colors.black
+                                  : Colors.blueGrey,
+
+                              border: Border.all(
+                                color: product.category == 'Women'
+                                    ? Colors.pink
+                                    : product.category == 'Men'
+                                    ? Colors.black
+                                    : Colors.blueGrey,
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                              child: AppText(
+                                text: product.category.toUpperCase(),
+                                size: 12,
+                                color: AppColors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Center(
+                          child: AppText(
+                            text: product.name,
+                            size: 9,
+                            align: TextAlign.center,
+                          ),
+                        ),
+                      ),
+
+                      10.gap,
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              product.category.toUpperCase(),
-              style: TextStyle(
-                fontSize: 12,
-                color: product.category == 'Women' ? Colors.pink : Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                product.name,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+            Positioned(
+              top: 16,
+              left: 16,
+              right: 16,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  product.imageUrl,
+                  height: 140,
+                  width: double.infinity,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ],

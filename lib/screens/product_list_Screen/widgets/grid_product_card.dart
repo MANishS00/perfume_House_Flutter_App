@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:perfumeapp/constants/app_Text.dart';
+import 'package:perfumeapp/constants/gap_Extension.dart';
 import 'package:perfumeapp/models/product.dart';
 import 'package:perfumeapp/screens/product_details/product_details_screen.dart';
 
@@ -47,7 +49,7 @@ class GridProductCard extends StatelessWidget {
                 child: Image.network(
                   product.imageUrl,
                   width: double.infinity,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
@@ -58,21 +60,23 @@ class GridProductCard extends StatelessWidget {
                 children: [
                   Text(
                     product.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text("50 ml", style: TextStyle(color: Colors.grey.shade600)),
-                  const SizedBox(height: 4),
+                  4.gap,
+                  AppText(
+                    text: "${product.size} ml",
+                    size: 12,
+                    color: Colors.grey.shade600,
+                  ),
+                  4.gap,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "\$${product.price}",
+                        "${product.price.toStringAsFixed(0)} ₹",
                         style: const TextStyle(
                           color: Colors.orange,
                           fontWeight: FontWeight.bold,
