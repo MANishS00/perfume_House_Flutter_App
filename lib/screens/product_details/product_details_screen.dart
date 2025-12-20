@@ -21,14 +21,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            /// 🔹 Top Content
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// Back Button
                     IconButton(
                       icon: const Icon(Icons.arrow_back),
                       onPressed: () => Navigator.pop(context),
@@ -36,57 +34,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                     const SizedBox(height: 20),
 
-                    /// Product Image with arrows
                     Center(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Image.network(
-                            widget.product.images[currentImageIndex],
-                            height: 260,
-                            fit: BoxFit.contain,
-                          ),
-
-                          /// LEFT ARROW
-                          if (widget.product.images.length > 1)
-                            Positioned(
-                              left: 0,
-                              child: _arrowButton(
-                                Icons.chevron_left,
-                                Colors.black87,
-                                () {
-                                  setState(() {
-                                    currentImageIndex =
-                                        (currentImageIndex -
-                                            1 +
-                                            widget.product.images.length) %
-                                        widget.product.images.length;
-                                  });
-                                },
-                              ),
-                            ),
-
-                          /// RIGHT ARROW
-                          if (widget.product.images.length > 1)
-                            Positioned(
-                              right: 0,
-                              child: _arrowButton(
-                                Icons.chevron_right,
-                                Colors.orange,
-                                () {
-                                  setState(() {
-                                    currentImageIndex =
-                                        (currentImageIndex + 1) %
-                                        widget.product.images.length;
-                                  });
-                                },
-                              ),
-                            ),
-                        ],
+                      child: SizedBox(
+                        height: 260,
+                        child: PageView.builder(
+                          itemCount: widget.product.images.length,
+                          onPageChanged: (index) {
+                            setState(() {
+                              currentImageIndex = index;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            return Image.network(
+                              widget.product.images[index],
+                              fit: BoxFit.contain,
+                            );
+                          },
+                        ),
                       ),
                     ),
 
-                    const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
@@ -108,7 +75,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                     ),
 
-                    /// Brand
                     const Text(
                       "Scents & Stories",
                       style: TextStyle(color: Colors.grey),
@@ -116,7 +82,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                     const SizedBox(height: 6),
 
-                    /// Name & Price
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -148,7 +113,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                     const SizedBox(height: 16),
 
-                    /// Description
                     Text(
                       widget.product.description.isNotEmpty
                           ? widget.product.description
@@ -158,12 +122,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                     const SizedBox(height: 30),
 
-                    /// Details & Quantity
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        /// Details
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
@@ -180,7 +142,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ],
                         ),
 
-                        /// Quantity
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -233,7 +194,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
 
-            /// 🔹 Add to Cart Button
             Padding(
               padding: const EdgeInsets.all(16),
               child: SizedBox(
@@ -246,9 +206,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  onPressed: () {
-                    // Add to cart logic here
-                  },
+                  onPressed: () {},
                   child: const Text(
                     "+ Add to Cart",
                     style: TextStyle(fontSize: 18),
@@ -258,19 +216,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _arrowButton(IconData icon, Color color, VoidCallback onTap) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: Colors.white),
-        onPressed: onTap,
       ),
     );
   }

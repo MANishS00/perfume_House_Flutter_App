@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:perfumeapp/screens/Checkout/checkout_screen.dart';
 import 'package:perfumeapp/screens/contactus_Screen.dart';
 import 'package:perfumeapp/screens/dataPrivacy_Screen.dart';
 import 'package:perfumeapp/screens/homePage.dart';
